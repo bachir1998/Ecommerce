@@ -208,7 +208,12 @@
          </div>  
         
         <?php  $row = $E -> fetch();}
-           } 
+          if($t==0)
+          {
+            echo'<center><h4 style="color:orange">Pas de Produit enregistré pour le moment</h1></center>';
+          }
+          }
+          
         ?>  
       </div>
     </div>  

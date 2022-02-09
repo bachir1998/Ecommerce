@@ -220,6 +220,7 @@
                         $adresse = $_POST['adresse'];
                         $age = $_POST['age'];
                         $sexe = $_POST['sexe'];
+                        $_SESSION['email'] = $_POST['email'];
                         $tel=$_POST['tel'];
                         $nature = $_POST['nature'];
                                         
@@ -294,6 +295,7 @@
                                     {
                                         echo "<script>
                                                 $('.yes').slideDown('slow');
+                                                window.location.href='EspacePersonnelCommercant.php';
                                             </script>";
                                            
                                         echo" <script>
