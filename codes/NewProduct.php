@@ -62,6 +62,10 @@
                   </li>
 
                   <li class="nav-item">
+                      <a class="nav-link active link" aria-current="page" href="EspacePersonnelCommercant.php">EPC</a>
+                  </li>
+
+                  <li class="nav-item">
                     <a  class="nav-link  link"  href="#">A Propos</a>
                   </li>
 
@@ -104,7 +108,278 @@
       </nav>
 
       <main class="container">
-          
+       <div class="col-md-12 col-lg-12">
+    
+        </div class="container">    
+            <div class="row">
+
+                <h4 class="mb-3">Add new product</h4>
+                    <form method='post' action='NewProduct.php' id='form' enctype='multipart/form-data'>
+                        
+                        <div class="success" style='color : green; font-size: 20px; display : none'>Insertion réussie</div>
+                        <div class="alreadyuse" style='color : red; font-size: 20px; display : none'>Vous avez déjà ajouté un produit portant ce nom </div>
+                        <div class="empty" style='color : red; font-size: 20px; display : none'>Remplissez tous les champs </div>
+                        <div class="errorinsert" style='color : red; font-size: 20px; display : none'>Error lors de l'insertion, revérifiez les informations</div>
+                        <div class="errquantstock" style='color : red; font-size: 20px; display : none'>le prix et la quantité doivent être supérieux à 10</div>
+                        <div class="errcategory" style='color : red; font-size: 20px; display : none'>Catégorie inexistante, réessayer</div>
+                            
+                        <div class="row g-3">
+                            
+                            <div class="col-sm-6">
+                                <label  class="form-label">Nom du produit</label>
+                                <input type="text"   class="form-control" name="nom" placeholder="Ecrivez le nom du roduit" value="<?php if(isset($_POST['nom'])){echo htmlentities($_POST['nom']);}?>" required>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label class="form-label">Catégorie</label>
+                                <?php
+                                     $idpers = $_SESSION['email'];
+						                         $dsn = 'mysql:host=localhost;dbname=ecommerce';
+                                     $bdd= new PDO($dsn, 'root', '');	
+                                     $select = 'select categoryname from category where email like ? ';
+                                     $stmt = $bdd -> prepare($select);
+                                     $stmt -> execute(array($idpers));
+
+                                     if($stmt->execute())
+                                        {
+                                         echo' <select class="form-select" name="categoryname" required>';
+                                          while($recupname = $stmt->fetch())
+                                            { 
+                                                echo ' <option value='.$recupname["categoryname"].'>'.$recupname["categoryname"].'</option>';
+                                            }
+                                            echo '</select>';
+                                        }
+                 
+                                ?>	
+						
+                            </div>
+
+                    
+                            <div class="col-sm-6">
+                                <label class="form-label">Description</label>
+                                <input type="text" class="form-control" name="description" value="<?php if(isset($_POST['description'])){echo htmlentities($_POST['description']);}?>" placeholder="Description du produit" required>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label class="form-label">Quantité à stocker <!--<span class="text-muted">(Optional)</span>--></label>
+                                <input type="text" class="form-control" name="stock"  value="<?php if(isset($_POST['stock'])){echo htmlentities($_POST['stock']);}?>" placeholder="Quantité à stocker">
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label class="form-label">Prix unitaire </label>
+                                <input type="number" min="15" class="form-control" name="prix" value="<?php if(isset($_POST['prix'])){echo htmlentities($_POST['prix']);}?>" placeholder="Renseignez le prix du produit">
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label class="form-label">Image </label>
+                                <input type='file' name='photo' size="30"  accept="image/*" class="form-control">
+                                <input type='hidden' name='MAX_FILE_SIZE' value='1000000'/>
+                            </div>
+
+                            <div class="my-3">
+                               
+                                
+                                <hr/>
+                                <button class="w-10 btn btn-dark btn-lg" type="submit">Ajouter</button>
+
+                            </div>    
+                          
+                        </div>    
+                    </form>
+                    
+                    <!--  Connexion avec la base de données -->
+
+                    <?php
+                        
+
+                        Function valid_extension($file)
+                        {
+                           $tab=array("jpg", "png", "jpeg", "gif");
+                           $ext=strtolower(substr(strrchr($file,'.'),1));
+                           if(in_array($ext,$tab))
+                              return true;
+                            return false;
+                        }
+                        Function max_size($file)
+                        {
+                            $maxsize=100000000000000000000000000000;
+                            if(isset($_POST['$file']['MAX_FILE_SIZE'])){
+                                $maxsize=$_POST['MAX_FILE_SIZE'];
+                            if($file['size']<=$maxsize)
+                                return true;
+                            return false;
+                            }
+                        }
+                        Function move_file($sourcefile, $destpath, $destname){
+                            if(!(is_dir($destpath)))
+                                mkdir($destpath);
+                            $dest=$destpath."/".$destname;
+                            $destname="im_ser_".$destname;
+                            $dest=$destpath."/".$destname;
+                            move_uploaded_file($sourcefile, $dest);
+                            // echo "Destpath=".$destpath." ";
+                            // echo "</br>Dest=".$dest;
+                            return $dest;
+                        }
+                        Function faire(){
+                            if(isset($_FILES['photo'])){
+                                if($_FILES['photo']['error']==0){
+                                    $file=$_FILES['photo'];
+                                    $file_name=$file['name'];
+                                    if(valid_extension($file_name)){
+                                        // if(max_size($file)){
+                                        if(move_file($file['tmp_name'], "tofs_server",$file['name'])){
+                                            $d=move_file($file['tmp_name'], "tofs_server",$file['name']);
+                                            return $d;
+                                        }
+                                    }
+                                    else{
+                                        echo "Votre extension n'est pas valid</br> Veuillez choisir une image svp";
+                                    }
+                                }
+                                else{
+                                    echo "Une erreur s'est produit lors de votre téléchagement</br>Veuillez reessayer ultérieurement";
+                                }
+                            }
+                        }
+                       
+                        $dsn = 'mysql:host=localhost;dbname=ecommerce';
+                        $bdd= new PDO($dsn, 'root', '');		
+                                            
+                        $requete = "INSERT INTO produit (nom ,description,QuantiteStock,prixU,email,categoryid) VALUES
+                                      (:nom,:description,:QuantiteStock,:prixU,:email,:categoryid)";
+                        $insertproduct = $bdd->prepare($requete);              
+              
+                            /*Recupération des données transmises par le formulaire*/
+                        if( isset($_POST['nom']) && isset($_POST['categoryname']) && isset($_POST['description'])&& isset($_POST['stock']) && isset($_POST['prix']))
+                        {
+                            /*$code=$_POST['code'];*/
+                            //$code=$_POST['code'];
+                            $idpers = $_SESSION['email'];
+                            $nom=$_POST['nom'];
+                            $category=$_POST['categoryname'];
+                            $description=$_POST['description'];
+                            $stock=$_POST['stock'];
+                            $prix=$_POST['prix'];
+                                    
+                            /*Vérification des informations*/
+                            if((!empty($nom))&&(!empty($category))&&(!empty($description))&&(!empty($stock))&&(!empty($prix)))
+                            {
+                                if(($_POST['stock']>=10) && ($_POST['prix']>=10)/*&&($_POST['code']>=1)*/)
+                                {
+                                    /*$creer->bindParam(':code',$code);*/
+                                    // $creer->bindParam(':code',$code);
+                                    $selectid = 'select * from category where email like ? and categoryname like ? ';
+                                    $stmt = $bdd -> prepare($selectid);
+                                    $stmt -> execute(array(
+                                    $idpers,
+                                    $category
+                                    ));
+
+                                    if($stmt->execute())
+                                    {
+                                        $row = $stmt -> fetch();
+                                        
+                                        while($row)
+                                        {
+                                            
+                                            $categoryid = $row['categoryid'];
+                                            $row = $stmt -> fetch();
+                                        }
+                                        $verify = false;
+                                        $requeteAllProducts = "select * from produit";
+                                        $res = $bdd -> query($requeteAllProducts);
+                                        
+                                        $ligne = $res -> fetch();
+                                        while($ligne)
+                                        {
+                                            if(($idpers == $ligne['email']) and ($nom == $ligne['nom']))
+                                            {
+                                                $verify = true;
+                                                break;
+                                            }
+                                            else
+                                                $ligne = $res -> fetch();
+                                        }
+
+                                        if($verify == true)
+                                        {
+                                            echo "<script>
+                                            $('.alreadyuse').slideDown('slow');
+                                            </script>";
+                                            
+                                        }
+                                        else
+                                        {
+                                          $insertproduct->bindParam(':nom',$nom);
+                                          $insertproduct->bindParam(':email',$idpers);
+                                          $insertproduct->bindParam(':categoryid',$categoryid);
+                                          $insertproduct->bindParam(':description',$description);
+                                          $insertproduct->bindParam(':QuantiteStock',$stock);
+                                          $insertproduct->bindParam(':prixU',$prix);
+                                          $run=$insertproduct->execute();
+                                          //fin de vérication des informations
+                                      
+                                  
+                                          /*procédé à l'éxécution*/
+                              
+                                          if($run) 
+                                          { 
+                                      
+                                              //LES images
+                                              $requeteimg="insert into image(url,code) values(:url,:code)";
+                                              $send=$bdd->prepare($requeteimg);
+                                              $code=$bdd->lastInsertId();
+                                              $url=faire();
+                                              $send->bindParam(':url',$url);
+                                              $send->bindParam(':code',$code);           
+                                              $send->execute();
+                                              echo "<script>
+                                              $('.success').slideDown('slow');
+                                              </script>";
+                                                
+
+                                          }    
+                                          else 
+                                          {
+                                            echo "<script>
+                                            $('.errorinsert').slideDown('slow');
+                                            </script>";
+                                          }
+                                        }  
+                                    }
+                                    else
+                                    {
+                                      echo "<script>
+                                            $('.errcategory').slideDown('slow');
+                                            </script>";
+                                    }
+                                      
+                                
+                                } 
+                                else
+                                {
+                                  echo "<script>
+                                  $('.errquantstock').slideDown('slow');
+                                  </script>";
+                                }             
+                            }
+                            else
+                            {
+                              echo "<script>
+                              $('.empty').slideDown('slow');
+                              </script>";
+                            
+                            }
+                        }                 
+                                          
+                      ?>
+                          
+                </div>
+            </div>
+        
+        </div>
+
         
       </main>
 

@@ -159,7 +159,61 @@
 </nav>
 
 <main class="container">
- </main>
+  <br/> <br/>
+    <h1 class="titre">Liste des produits</h1>
+    <br/>
+    <br/>
+
+    <div class="container marketing">
+
+      <!-- Three columns of text below the carousel -->
+      <div class="row">
+        <?php
+          $dsn = 'mysql:host=localhost;dbname=ecommerce';
+          $bdd= new PDO($dsn, 'root', '');	
+          $C="SELECT p.code,nom,categoryname,description,QuantiteStock,prixU,url FROM produit p, category c, image i where p.code = i.code and p.categoryid=c.categoryid and p.email like ? ORDER BY categoryname ASC ";
+            //requete pour rechercher des produits et images	
+          $E=$bdd->prepare($C); 
+          $E->execute(array($_SESSION['email']));
+          if($E->execute())
+          {
+            $row = $E -> fetch();
+            $t = 0;
+            while($row)
+            {
+              $t++;
+        	                 
+       ?>
+          <div  style="margin-bottom: 3%;" class="col-md-6 col-lg-4 d-flex align-items-stretch"> 
+           
+           <div  class="card" style="width: 100%;">
+             
+             <img src="<?= $row["url"] ?>" class="card-img-top" style="width:100%;height:300px" alt="Fissure in Sandstone"/>
+             
+             <div class="card-body">
+               
+               <h5 class="card-title"><?= $row["nom"] ?></h5>
+               <p class="card-text"> <?= $row["description"] ?></p>
+               <center>
+                   <a class="btn btn-primary" style="background-color: #fec500;border:0px; " href="#">
+                                       commander
+                                 
+                   </a>
+               </center>   
+
+             </div>
+
+           </div>
+
+         </div>  
+        
+        <?php  $row = $E -> fetch();}
+           } 
+        ?>  
+      </div>
+    </div>  
+
+</main>
 
 <!-- FOOTER -->
 

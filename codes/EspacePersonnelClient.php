@@ -1,3 +1,6 @@
+<?php
+	session_start();
+?>
 <!doctype html>
 <html lang="fr">
   <head>
@@ -90,6 +93,46 @@
               <li><a class="dropdown-item" href="LoginClient.php">Client</a></li>
             </ul>
           </div>
+
+          <div class="dropdown text-end">
+            <a style="margin-right : 105px;"  href="#" class="d-block link-light text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+              <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+            </a>
+            <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
+            
+                <li><a style="font-weight: bold;" class="dropdown-item" href="#">Profil :</a></li>  
+                <li><hr class="dropdown-divider"></li>
+                <li><?php
+                            $dsn = 'mysql:host=localhost;dbname=ecommerce';
+                            $bdd= new PDO($dsn, 'root', '');		
+                            
+                                      
+                            $select = "SELECT * FROM personne  WHERE email like ? ";
+                            $stmt = $bdd -> prepare($select);
+                            $stmt -> execute(array($_SESSION['email']));
+
+                            if($stmt->execute())
+                            {
+                              $row = $stmt -> fetch();
+                              $t = 0;
+                              
+                              while($row)
+                              { $t++;
+                                
+                                echo '
+                                    <a class="dropdown-item">'.$row["prenom"].' '.$row["nom"].'</a>';
+                                $row = $stmt -> fetch();
+                              }
+                              
+                              
+                            }
+                            
+                          ?></li>
+                  
+              
+              <li><a class="dropdown-item" href="#">Sign out</a></li>
+            </ul>
+        </div>
           
             
         </ul>
