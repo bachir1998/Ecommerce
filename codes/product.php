@@ -130,6 +130,7 @@
                         <h5 class="card-title">Propriétaire : <span style="color : #fec500"><?= $row["prenom"]. " " . $row["nom"]?></span></h5>
                         <h3 class="card-text"> <?= $row["productname"] ?></h3>
                         <p class="card-text"> <?= $row["description"] ?></p>
+                        <p class="card-text"> <?= $row["prixU"] ?> € </p>
                         <center>
                             <a class="btn btn-primary" style="background-color: #fec500;border:0px; " href="#">
                                                 commander
