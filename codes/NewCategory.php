@@ -44,6 +44,60 @@
     <link href="../css/footer.css" rel="stylesheet">
   </head>
   <body>
+
+  <?php		//Traitement du formulaire
+            // ===========================================================================================================================================
+              Function valid_extension($file)
+              {
+                $tab=array("jpg", "png", "jpeg", "gif");
+                $ext=strtolower(substr(strrchr($file,'.'),1));
+                if(in_array($ext,$tab))
+                    return true;
+                  return false;
+              }
+              Function max_size($file)
+              {
+                  $maxsize=100000000000000000000000000000;
+                  if(isset($_POST['$file']['MAX_FILE_SIZE'])){
+                      $maxsize=$_POST['MAX_FILE_SIZE'];
+                  if($file['size']<=$maxsize)
+                      return true;
+                  return false;
+                  }
+              }
+              Function move_file($sourcefile, $destpath, $destname){
+                  if(!(is_dir($destpath)))
+                      mkdir($destpath);
+                  $dest=$destpath."/".$destname;
+                  $destname="im_ser_".$destname;
+                  $dest=$destpath."/".$destname;
+                  move_uploaded_file($sourcefile, $dest);
+                  // echo "Destpath=".$destpath." ";
+                  // echo "</br>Dest=".$dest;
+                  return $dest;
+              }
+              Function faire(){
+                  if(isset($_FILES['photo'])){
+                      if($_FILES['photo']['error']==0){
+                          $file=$_FILES['photo'];
+                          $file_name=$file['name'];
+                          if(valid_extension($file_name)){
+                              // if(max_size($file)){
+                              if(move_file($file['tmp_name'], "tofs_server",$file['name'])){
+                                  $d=move_file($file['tmp_name'], "tofs_server",$file['name']);
+                                  return $d;
+                              }
+                          }
+                          else{
+                              echo "Votre extension n'est pas valid</br> Veuillez choisir une image svp";
+                          }
+                      }
+                      else{
+                          echo "Une erreur s'est produit lors de votre téléchagement</br>Veuillez reessayer ultérieurement";
+                      }
+                  }
+              }
+          ?>
     
       <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
         <div class="container-fluid">
@@ -55,179 +109,119 @@
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
             
             </ul>
-            <form class="d-flex">
-              <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                  <li class="nav-item">
-                      <a class="nav-link active link" aria-current="page" href="accueil.php">Accueil</a>
-                  </li>
-
-                  <li class="nav-item">
-                    <a  class="nav-link  link"  href="#">A Propos</a>
-                  </li>
-
-                <li class="nav-item">
-                  <a  class="nav-link  link float"  href="#">Contacts</a>
-                </li>
-
-                <div class="dropdown">
-                  <button style="margin-right:65px;" class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                    S'Inscrire
-                  </button>
-                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                    <li class="dropdown-header">En tant que :</li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="InscriptionCommercant.php">Commercant</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="InscriptionClient.php">Client</a></li>
-                  </ul>
-                </div>
-                
-                <div class="dropdown">
-                  <button style="margin-right:65px;" class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                    Se connecter
-                  </button>
-                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                    <li class="dropdown-header">En tant que :</li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="LoginCommercant.php">Commercant</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="LoginClient.php">Client</a></li>
-                  </ul>
-                </div>
-                
-                  
-              </ul>
-        
-          </form>
+            
           </div>
         </div>
       </nav>
 
       <main class="container">
-          
-          <div class="row">
-            
-              <div class='design col-lg-10' style=' margin-left : 0%;'> 
-                <form method='post' action='NewCategory.php' class=" formul col-lg-5 login-form" style='box-shadow : 0px 2px 3px black'>
-                  <fieldset>
-                    <legend style='font-weight : bold; font-size : 30px;'>Add Category Name</legend>
-                    <div class="yes"   style='color : green; font-size: 20px; display : none'>Catégorie ajoutée</div>
-                    <div class="err" style='color : red; font-size: 20px; display : none'>Erreur lors de l'ajout, réessayez</div>
-                    <div class="errnull" style='color : red; font-size: 20px; display : none'>Veuillez renseignez le nom de la catégorie</div>
-                    <div class="alert" style='color : orange; font-size: 20px; display : none'>Vous avez déjà ajouté une catégorie qui porte ce nom</div>
-                    
-                    <input  class='form-control' required type="text" name="categoryname" placeholder='Renseignez un nom de caatégorie parlant...'/><br/>
-                    <br/><br/>
-                    <input   class='sub form-control btn btn-primary' type='submit' value='Ajouter' />
-                  </fieldset>
-                 </form>
-              </div>
+       <div class="col-md-12 col-lg-12">
+    
+        </div class="container">    
+            <div class="row">
 
-            <?php
-
-                if(isset($_POST['categoryname'])){
-                  $email = $_SESSION['email'];
-                  $categoryname = $_POST['categoryname'];
-                
-                    $dsn = 'mysql:host=localhost;dbname=ecommerce';
-                    $bdd= new PDO($dsn, 'root', '');	
-                    
-                    $verify = false;
-                    $requete = "select * from category";
-                    $res = $bdd -> query($requete);
-                    
-                    $ligne = $res -> fetch();
-                    while($ligne)
-                    {
-                        if(($email == $ligne['email']) and ($categoryname == $ligne['categoryname']))
-                        {
-                            $verify = true;
-                            break;
-                        }
-                        else
-                            $ligne = $res -> fetch();
-                    }
-
-                    if($verify == true)
-                    {
-                        echo "<script>
-                        $('.alert').slideDown('slow');
-                        </script>";
+                <h4 class="mb-3">Ajout d'image pour la catégorie</h4>
+                    <form method='post' action='NewCategory.php' id='form' enctype='multipart/form-data'>
                         
-                    }
-                    else
-                    {
-                       
-                            $req = "insert into category (categoryname,email)
-                                    values ('$categoryname','$email')";
+                        <div class="success" style='color : green; font-size: 20px; display : none'>Insertion réussie</div>
+                        <div class="empty" style='color : red; font-size: 20px; display : none'>Remplissez tous les champs </div>
+                            
+                        <div class="row g-3">
+                            
+                           
+                            <div class="col-sm-6">
+                                <label class="form-label">Catégorie</label>
+                                <?php
+                                     $dsn = 'mysql:host=localhost;dbname=ecommerce';
+                                     $bdd= new PDO($dsn, 'root', '');	
+                                     $select = 'select categoryname from category';
+                                     $stmt = $bdd -> query($select);
+                                    // $stmt -> execute(array($idpers));
 
-                            $stmt=$bdd->prepare($req);
-                            if(!empty($categoryname))
-                            {
-                                $stmt->bindParam(':categoryname', $categoryname);
-                                $stmt->bindParam(':email', $email);
-                                if($stmt->execute())
-                                {
-                                    echo "<script>
-                                    $('.yes').slideDown('slow');
-                                   </script>";
+                                         echo' <select class="form-select" name="categoryname" required>';
+                                          while($recupname = $stmt->fetch())
+                                            { 
+                                                echo ' <option value='.$recupname["categoryname"].'>'.$recupname["categoryname"].'</option>';
+                                            }
+                                          echo '</select>';
+                                        
+                 
+                                ?>	
+						
+                            </div>
+
+                    
+                           
+                            <div class="col-sm-6">
+                                <label class="form-label">Image </label>
+                                <input type='file' name='photo' size="30"  accept="image/*" class="form-control">
+                                <input type='hidden' name='MAX_FILE_SIZE' value='1000000'/>
+                            </div>
+
+                            <div class="my-3">
+                               
                                 
-                                }
+                                <hr/>
+                                <button class="w-10 btn btn-dark btn-lg" type="submit">Ajouter</button>
 
-                                else
-                                {
+                            </div>    
+                          
+                        </div>    
+                    </form>
+                    
+                    <!--  Connexion avec la base de données -->
+
+                    <?php
+                        
+
+                       
+                        $dsn = 'mysql:host=localhost;dbname=ecommerce';
+                        $bdd= new PDO($dsn, 'root', '');		
+                                            
+                        $req1 = 'INSERT INTO imagecategory (url, categoryname) VALUES(:url, :categoryname)';
+	
+                        $stmt1=$bdd->prepare($req1);
+                                   
+              
+                            /*Recupération des données transmises par le formulaire*/
+                        if(isset($_POST['categoryname']) )
+                        {
+                            $category=$_POST['categoryname'];
+                                    
+                            /*Vérification des informations*/
+                            if((!empty($category)))
+                            {
+                                 $url=faire();		
+                                  //On remplit les 3 image dans la table image
+                              
+                                   $stmt1->bindParam(':url', $url);
+                                   $stmt1->bindParam(':categoryname', $category);
+                      
+                          
+                            
+                                   if($stmt1->execute()){
                                     echo "<script>
-                                    $('.err').slideDown('slow');
-                                   </script>";
-                                }
+                                    $('.success').slideDown('slow');
+                                    </script>";
+                            }
+                      
+                                            
                             }
                             else
                             {
-                                echo "<script>
-                                $('.errnull').slideDown('slow');
-                               </script>";
-                              
-                               
+                              echo "<script>
+                              $('.empty').slideDown('slow');
+                              </script>";
+                            
                             }
-                        
-                    }
-
-
-                }
-                    
-            ?>
-            <script type="text/javascript">
-                    
-                    $(".txtb input").on("focus",function()
-                    {
-                        $(this).addClass("focus"); 
-                    });
-
-                    $(".txtb input").on("blur",function()
-                    {
-                        if($(this).val() == "")
-                        $(this).removeClass("focus"); 
-                    });
-
-
-                    </script>
-
-
-            <script>
-
-            $(".design ").hide(0,'linear')
-
-            $(".design").slideDown(3000,'linear');
-              
-
-              
-            </script>
-
-
-
-          </div>
+                        }                 
+                                          
+                      ?>
+                          
+                </div>
+            </div>
         
-      </main>
+        </div>
 
       <!-- FOOTER -->
       <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>

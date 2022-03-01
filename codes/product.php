@@ -1,6 +1,3 @@
-<?php
-	session_start();
-?>
 <!doctype html>
 <html lang="fr">
   <head>
@@ -13,14 +10,9 @@
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/navbar-static/">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/checkout/">
    
     <!-- Bootstrap core CSS -->
-   <link href="../css/bootstrap.min.css" rel="stylesheet">
-   <link rel="stylesheet"  href="../css/bootstrap.css"/>
-   <script src="../css/jquery-3.4.1.min.js"></script>
-   <script src="../css/bootstrap.js"></script>
-
+<link href="../css/bootstrap.min.css" rel="stylesheet">
 
     <style>
       .bd-placeholder-img {
@@ -58,7 +50,7 @@
       <form class="d-flex">
         <ul class="navbar-nav me-auto mb-2 mb-md-0">
             <li class="nav-item">
-                <a class="nav-link active link" aria-current="page" href="accueil.php">Accueil</a>
+                <a class="nav-link active link" aria-current="page" href="#">Accueil</a>
             </li>
 
             <li class="nav-item">
@@ -68,18 +60,6 @@
            <li class="nav-item">
             <a  class="nav-link  link float"  href="#">Contacts</a>
           </li>
-
-          <div class="dropdown">
-            <button style="margin-right:65px;" class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-              Ajouter
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              <li class="dropdown-header">Options :</li>
-            
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="NewProduct.php">new Product</a></li>
-            </ul>
-          </div>
 
           <div class="dropdown">
             <button style="margin-right:65px;" class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
@@ -106,48 +86,6 @@
               <li><a class="dropdown-item" href="LoginClient.php">Client</a></li>
             </ul>
           </div>
-
-
-          
-        <div class="dropdown text-end">
-          <a style="margin-right : 105px;"  href="#" class="d-block link-light text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-            <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
-          </a>
-          <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-          
-              <li><a style="font-weight: bold;" class="dropdown-item" href="#">Profil :</a></li>  
-              <li><hr class="dropdown-divider"></li>
-              <li><?php
-                          $dsn = 'mysql:host=localhost;dbname=ecommerce';
-                          $bdd= new PDO($dsn, 'root', '');		
-                          
-                                    
-                          $select = "SELECT * FROM personne  WHERE email like ? ";
-                          $stmt = $bdd -> prepare($select);
-                          $stmt -> execute(array($_SESSION['email']));
-
-                          if($stmt->execute())
-                          {
-                            $row = $stmt -> fetch();
-                            $t = 0;
-                            
-                            while($row)
-                            { $t++;
-                              
-                              echo '
-                                  <a class="dropdown-item">'.$row["prenom"].' '.$row["nom"].'</a>';
-                              $row = $stmt -> fetch();
-                            }
-                            
-                            
-                          }
-                          
-                        ?></li>
-                
-            
-            <li><a class="dropdown-item" href="#">Sign out</a></li>
-          </ul>
-        </div>
           
             
         </ul>
@@ -158,70 +96,121 @@
 </nav>
 
 <main class="container">
+
   <br/> <br/>
-    <h1 class="titre">Liste des produits</h1>
-    <br/>
-    <br/>
+  <?php $categoryname = $_GET['categoryname'] ?>
+  <h1 class="titre">Catalogue de <?php echo "$categoryname"?></h1>
+  <br/>
+  <br/>
 
-    <div class="container marketing">
+  <div class="container marketing">
 
-      <!-- Three columns of text below the carousel -->
-      <div class="row">
-        <?php
-          $dsn = 'mysql:host=localhost;dbname=ecommerce';
-          $bdd= new PDO($dsn, 'root', '');	
-          $C="SELECT p.code,productname,categoryname,description,QuantiteStock,prixU,url FROM produit p, category c, image i where p.code = i.code and p.categoryid=c.categoryid and p.email like ? ORDER BY categoryname ASC ";
-            //requete pour rechercher des produits et images	
-          $E=$bdd->prepare($C); 
-          $E->execute(array($_SESSION['email']));
-          if($E->execute())
-          {
-            $row = $E -> fetch();
-            $t = 0;
-            while($row)
-            {
-              $t++;
-        	                 
-       ?>
-          <div  style="margin-bottom: 3%;" class="col-md-6 col-lg-4 d-flex align-items-stretch"> 
-           
-           <div  class="card" style="width: 100%;">
-             
-             <img src="<?= $row["url"] ?>" class="card-img-top" style="width:100%;height:300px" alt="Fissure in Sandstone"/>
-             
-             <div class="card-body">
-               
-               <h5 class="card-title"><?= $row["productname"] ?></h5>
-               <p class="card-text"> <?= $row["description"] ?></p>
-               <center>
-                   <a class="btn btn-primary" style="background-color: #fec500;border:0px; " href="#">
-                                       commander
-                                 
-                   </a>
-               </center>   
+    <!-- Three columns of text below the carousel -->
+    <div class="row">
+      
+      
+      <?php
+        $dsn = 'mysql:host=localhost;dbname=ecommerce';
+        $bdd= new PDO($dsn, 'root', '');
+        $requete = 'select * from category c join produit p join personne pers join image i on c.categoryid=p.categoryid and p.email = pers.email and p.code=i.code where categoryname="'.$categoryname.'" ';	// On recupere les biens qui ont des images dans la table `image`
+        $urls = $bdd->query($requete);
+        $t = 0;
+        while($row = $urls->fetch()){
+            $t++;
+      ?>
 
-             </div>
+        <div  style="margin-bottom: 3%;" class="col-md-6 col-lg-4 d-flex align-items-stretch"> 
+                
+                <div  class="card" style="width: 100%;">
+                    
+                    <img src="<?= $row["url"] ?>" class="card-img-top" style="width:100%;height:300px" alt="Fissure in Sandstone"/>
+                    
+                    <div class="card-body">
+                    
+                        <h5 class="card-title">Propriétaire : <span style="color : #fec500"><?= $row["prenom"]. " " . $row["nom"]?></span></h5>
+                        <h3 class="card-text"> <?= $row["productname"] ?></h3>
+                        <p class="card-text"> <?= $row["description"] ?></p>
+                        <center>
+                            <a class="btn btn-primary" style="background-color: #fec500;border:0px; " href="#">
+                                                commander
+                                            
+                            </a>
+                        </center>   
 
-           </div>
+                    </div>
 
-         </div>  
+                </div>
+
+       </div>
+                
+                
         
-        <?php  $row = $E -> fetch();}
+        
+        
+        
+       <?php  }
           if($t==0)
           {
             echo'<center><h4 style="color:orange">Pas de Produit enregistré pour le moment</h1></center>';
           }
-          }
           
-        ?>  
-      </div>
-    </div>  
+          
+        ?>
+    </div><!-- /.row -->
+  </div>
 
+
+<!--
+  <br/> <br/>
+  <h1 class="titre">Nos Réalisations</h1>
+  <br/> <br/>
+
+  <div class="container marketing">
+    <div class="row">
+
+          <div class="col-lg-4">  
+
+            <img  src="../images/siteweb.jpg"  width="400" height="500" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false"/>
+      
+                 
+    
+          </div>
+
+          <div class="col-lg-4">  
+
+            <img  src="../images/siteweb.jpg"  width="400" height="500" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false"/>
+        
+          
+                 
+              
+
+          </div>
+
+          <div class="col-lg-4">  
+
+            <img  src="../images/siteweb.jpg"  width="400" height="500" role="img" aria-label="Placeholder: 140x140" preserveAspectRatio="xMidYMid slice" focusable="false"/>
+        
+          
+          </div>
+  
+ 
+     
+    </div>
+  </div>  
+
+  <br/>
+
+  <center><a class="btn btn-primary" href="#">Plus de réalisations &raquo;</a></center>
+-->
+  <br/><br/>
+
+
+  
 </main>
 
 <!-- FOOTER -->
 
-<footer style="margin-top: 15%;" id="footer" class="foot">
+<footer id="footer" class="foot">
   <div class="footer-top  footer-default">
     <br/>
       <div class="container">
@@ -285,8 +274,13 @@
       </div>
   </div>
 </footer>
+<!-- <footer class="container">
+      <p class="float-end"><a href="#">Back to top</a></p>
+      <p>&copy; 2017–2021 Company, Inc. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+  </footer>-->
 
-<script src="../css/bootstrap.bundle.min.js"></script>
+
+  <script src="../css/bootstrap.bundle.min.js"></script>
 
 
 

@@ -136,19 +136,17 @@
                                      $idpers = $_SESSION['email'];
 						                         $dsn = 'mysql:host=localhost;dbname=ecommerce';
                                      $bdd= new PDO($dsn, 'root', '');	
-                                     $select = 'select categoryname from category where email like ? ';
-                                     $stmt = $bdd -> prepare($select);
-                                     $stmt -> execute(array($idpers));
+                                     $select = 'select categoryname from category';
+                                     $stmt = $bdd -> query($select);
+                                    // $stmt -> execute(array($idpers));
 
-                                     if($stmt->execute())
-                                        {
                                          echo' <select class="form-select" name="categoryname" required>';
                                           while($recupname = $stmt->fetch())
                                             { 
                                                 echo ' <option value='.$recupname["categoryname"].'>'.$recupname["categoryname"].'</option>';
                                             }
-                                            echo '</select>';
-                                        }
+                                          echo '</select>';
+                                        
                  
                                 ?>	
 						
@@ -246,8 +244,8 @@
                         $dsn = 'mysql:host=localhost;dbname=ecommerce';
                         $bdd= new PDO($dsn, 'root', '');		
                                             
-                        $requete = "INSERT INTO produit (nom ,description,QuantiteStock,prixU,email,categoryid) VALUES
-                                      (:nom,:description,:QuantiteStock,:prixU,:email,:categoryid)";
+                        $requete = "INSERT INTO produit (productname ,description,QuantiteStock,prixU,email,categoryid) VALUES
+                                      (:productname,:description,:QuantiteStock,:prixU,:email,:categoryid)";
                         $insertproduct = $bdd->prepare($requete);              
               
                             /*Recupération des données transmises par le formulaire*/
@@ -269,10 +267,9 @@
                                 {
                                     /*$creer->bindParam(':code',$code);*/
                                     // $creer->bindParam(':code',$code);
-                                    $selectid = 'select * from category where email like ? and categoryname like ? ';
+                                    $selectid = 'select * from category where categoryname like ? ';
                                     $stmt = $bdd -> prepare($selectid);
                                     $stmt -> execute(array(
-                                    $idpers,
                                     $category
                                     ));
 
@@ -293,7 +290,7 @@
                                         $ligne = $res -> fetch();
                                         while($ligne)
                                         {
-                                            if(($idpers == $ligne['email']) and ($nom == $ligne['nom']))
+                                            if(($idpers == $ligne['email']) and ($nom == $ligne['productname']))
                                             {
                                                 $verify = true;
                                                 break;
@@ -311,7 +308,7 @@
                                         }
                                         else
                                         {
-                                          $insertproduct->bindParam(':nom',$nom);
+                                          $insertproduct->bindParam(':productname',$nom);
                                           $insertproduct->bindParam(':email',$idpers);
                                           $insertproduct->bindParam(':categoryid',$categoryid);
                                           $insertproduct->bindParam(':description',$description);

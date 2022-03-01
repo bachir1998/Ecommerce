@@ -127,43 +127,35 @@
 
     <!-- Three columns of text below the carousel -->
     <div class="row">
-
-      <div class="col-lg-4">
-        <div class="card">
-            <img class="bd-placeholder-img card-img-top" src="../images/product.png" width="100%" height="200"/>
-
-            <div class="card-body">
-            <h5 class="card-title">Des produits de marques</h5>
-            <p class="card-text">Des produits diversifiés dont les marques sont reconnues partout dans le monde</p>
-            </div>
-        </div>
-      </div>
-
-
       
-      <div class="col-lg-4">
-        <div class="card">
-            <img class="bd-placeholder-img card-img-top" src="../images/price.png" width="100%" height="200"/>
+      
+      <?php
+        $dsn = 'mysql:host=localhost;dbname=ecommerce';
+        $bdd= new PDO($dsn, 'root', '');
+        $requete = 'select * from imagecategory';	// On recupere les biens qui ont des images dans la table `image`
+        $urls = $bdd->query($requete);
+        while($url = $urls->fetch()){
+      ?>
+          <?php $lien="product.php?categoryname=".$url['categoryname']."&url=".$url['url']; ?>
+          <div class="col-lg-4">
+            <div class="card">
+                <img class="bd-placeholder-img card-img-top" src="<?= $url["url"] ?>" width="100%" height="200"/>
 
-            <div class="card-body">
-            <h5 class="card-title">Des prix imbattables</h5>
-            <p class="card-text">Des produits de marques à des prix incroyables, ingénieux non ?</p>
+                <div class="card-body">
+                <h5 class="card-title"><?= $url["categoryname"]?></h5>
+                <p class="card-text"><center>
+                   <a class="btn btn-primary" style="background-color: #fec500;border:0px; " href="<?= $lien ?>">
+                                       plus de détails
+                                 
+                   </a>
+               </center>   
+</p>
+                </div>
             </div>
-        </div>
-      </div>
-
-
-      <div class="col-lg-4">
-        <div class="card">
-            <img class="bd-placeholder-img card-img-top" src="../images/help.jpg" width="100%" height="200"/>
-
-            <div class="card-body">
-            <h5 class="card-title">Ah je suis confus !</h5>
-            <p class="card-text">Vous avez du mal à comprendre ou à naviguer sur le site, cliquez sur ce lien pour vous orientez</p>
-            </div>
-        </div>
-      </div>
-
+          </div>
+      <?php 
+        } 
+      ?>
 
     </div><!-- /.row -->
   </div>
