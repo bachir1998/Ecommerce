@@ -1,3 +1,7 @@
+<?php
+	session_start();
+?>
+
 <!doctype html>
 <html lang="fr">
   <head>
@@ -74,18 +78,6 @@
             </ul>
           </div>
            
-          <div class="dropdown">
-            <button style="margin-right:65px;" class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-              Se connecter
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              <li class="dropdown-header">En tant que :</li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="LoginCommercant.php">Commercant</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="LoginClient.php">Client</a></li>
-            </ul>
-          </div>
           
             
         </ul>
@@ -98,8 +90,8 @@
 <main class="container">
 
   <br/> <br/>
-  <?php $categoryname = $_GET['categoryname'] ?>
-  <h1 class="titre">Catalogue de <?php echo "$categoryname"?></h1>
+  <?php $productid = $_GET['code']  ;$productname = $_GET['productname'] ?>
+  <h1 class="titre">Produit :  <?php echo "$productname"?></h1>
   <br/>
   <br/>
 
@@ -112,13 +104,13 @@
       <?php
         $dsn = 'mysql:host=localhost;dbname=ecommerce';
         $bdd= new PDO($dsn, 'root', '');
-        $requete = 'select * from category c join produit p join personne pers join image i on c.categoryid=p.categoryid and p.email = pers.email and p.code=i.code where categoryname="'.$categoryname.'" ';	// On recupere les biens qui ont des images dans la table `image`
+        $requete = 'select * from category c join produit p join personne pers join image i on c.categoryid=p.categoryid and p.email = pers.email and p.code=i.code where p.code="'.$productid.'" ';	// On recupere les biens qui ont des images dans la table `image`
         $urls = $bdd->query($requete);
         $t = 0;
         while($row = $urls->fetch()){
-            $t++;
+    
       ?>
-        <?php $lien="productcommande.php?productname=".$row['productname']."&code=".$row['code']; ?>
+        <div  style="margin-bottom: 3%;" class="col-md-6 col-lg-4 d-flex align-items-stretch"> </div>
         <div  style="margin-bottom: 3%;" class="col-md-6 col-lg-4 d-flex align-items-stretch"> 
                 
                 <div  class="card" style="width: 100%;">
@@ -131,17 +123,31 @@
                         <h3 class="card-text"> <?= $row["productname"] ?></h3>
                         <p class="card-text"> <?= $row["description"] ?></p>
                         <p class="card-text"> <?= $row["prixU"] ?> € </p>
-                        
+                        <p class="card-text"> Quantité disponible : <?= $row["QuantiteStock"] ?> </p>
                         <center>
-                            <a class="btn btn-primary" style="background-color: #fec500;border:0px; " href="<?= $lien ?>">
-                                                commander
-                                            
-                            </a>
-                        </center>   
+                           <form method='post' action='commande.php' id='form' enctype='multipart/form-data'>
+                                <div class="success" style='color : green; font-size: 20px; display : none'>Insertion réussie</div>
+                                <div class="col-sm-6">
+                                        <label class="form-label">Quantité à Commander :</label>
+                                        <input type="number" min='1' max= "<?= $row["QuantiteStock"] ?>"class="form-control" name="stock"  value="<?php if(isset($_POST['stock'])){echo htmlentities($_POST['stock']);}?>" placeholder="Quantité à stocker">
+                                        <input type="hidden" name="codeprod" value="<?= $row["code"] ?>">
+                                        
+                                </div>
+
+                                    <br/>
+                                <center>
+                                    <input class="btn btn-primary"  type="submit" class="btn btn-success" style="background-color: #fec500;border:0px; " >
+                                                        
+                                    
+                                </center>   
+                            </form>  
+                        </center>  
 
                     </div>
 
                 </div>
+
+
 
        </div>
                 
@@ -151,13 +157,13 @@
         
         
        <?php  }
-          if($t==0)
-          {
-            echo'<center><h4 style="color:orange">Pas de Produit enregistré pour le moment</h1></center>';
-          }
-          
+         
           
         ?>
+
+
+
+
     </div><!-- /.row -->
   </div>
 
