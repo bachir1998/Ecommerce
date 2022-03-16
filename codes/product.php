@@ -107,12 +107,15 @@
 
     <!-- Three columns of text below the carousel -->
     <div class="row">
+
+
+      
       
       
       <?php
         $dsn = 'mysql:host=localhost;dbname=ecommerce';
         $bdd= new PDO($dsn, 'root', '');
-        $requete = 'select * from category c join produit p join personne pers join image i on c.categoryid=p.categoryid and p.email = pers.email and p.code=i.code where categoryname="'.$categoryname.'" ';	// On recupere les biens qui ont des images dans la table `image`
+        $requete = 'select p.code,productname,QuantiteStock,description,url,prixU, pers.prenom, pers.nom from category c join produit p join personne pers join image i on c.categoryid=p.categoryid and p.email = pers.email and p.code=i.code where categoryname="'.$categoryname.'" ';	// On recupere les biens qui ont des images dans la table `image`
         $urls = $bdd->query($requete);
         $t = 0;
         while($row = $urls->fetch()){
@@ -132,12 +135,17 @@
                         <p class="card-text"> <?= $row["description"] ?></p>
                         <p class="card-text"> <?= $row["prixU"] ?> € </p>
                         
-                        <center>
-                            <a class="btn btn-primary" style="background-color: #fec500;border:0px; " href="<?= $lien ?>">
-                                                commander
-                                            
-                            </a>
-                        </center>   
+                    
+                        <?php 
+                             echo '<form action="LoginClientCommande.php" method="post" >';
+                             echo'<input type="hidden" name="code" value='.$row['code'].'>';
+                             echo'<input type="hidden" name="quant" value='.$row['QuantiteStock'].'>';
+                             echo"<center>";echo'<input  type="submit" class="btn btn-success"  value="Commander">';
+                             echo"</center>";
+                             echo '</form>';
+                        
+                        
+                        ?>
 
                     </div>
 

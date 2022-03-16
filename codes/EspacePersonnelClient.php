@@ -143,8 +143,69 @@
 </nav>
 
 <main class="container">
-  
+  <br/> <br/>
+    <h1 class="titre">Produit (s) ~~ commandé (s)</h1>
+    <br/>
+    <br/>
+
+    <div class="container marketing">
+
+      <!-- Three columns of text below the carousel -->
+      <div class="row">
+        <?php
+          $dsn = 'mysql:host=localhost;dbname=ecommerce';
+          $bdd= new PDO($dsn, 'root', '');	
+          $C="SELECT com.statut, p.code,productname,categoryname,description,QuantiteStock,prixU,url FROM personne pers, produit p, category c,commande com, image i where p.code = i.code and  p.code = com.code and p.categoryid=c.categoryid and pers.email like ? ORDER BY categoryname ASC ";
+            //requete pour rechercher des produits et images	
+          $E=$bdd->prepare($C); 
+          $E->execute(array($_SESSION['email']));
+          if($E->execute())
+          {
+            $row = $E -> fetch();
+            $t = 0;
+            while($row)
+            {
+              $t++;
+        	                 
+       ?>
+          <div  style="margin-bottom: 3%;" class="col-md-6 col-lg-4 d-flex align-items-stretch"> 
+           
+           <div  class="card" style="width: 100%;">
+             
+             <img src="<?= $row["url"] ?>" class="card-img-top" style="width:100%;height:300px" alt="Fissure in Sandstone"/>
+             
+             <div class="card-body">
+               
+               <h5 class="card-title">Article : <?= $row["productname"] ?></h5>
+               <p class="card-text"> Description : <?= $row["description"] ?></p>
+               <p class="card-text"> Statut : <?= $row["statut"] ?></p>
+               <center>
+                   <a class="btn btn-primary" style="background-color: #fec500;border:0px; " href="#">
+                                       commande en attente de validation
+                                 
+                   </a>
+               </center>   
+
+             </div>
+
+           </div>
+
+         </div>  
+        
+        <?php  $row = $E -> fetch();}
+          if($t==0)
+          {
+            echo'<center><h4 style="color:orange">Pas de Produit enregistré pour le moment</h1></center>';
+          }
+          }
+          
+        ?>  
+      </div>
+    </div>  
+
 </main>
+
+
 
 <!-- FOOTER -->
 
