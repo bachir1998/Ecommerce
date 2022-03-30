@@ -97,14 +97,13 @@
 
 <main class="container">
    
-  <div class="bg-light p-5 rounded">
+  <div class="bg-white p-5 rounded"  style="background-color: white;">
     
     <div class="row">    
       
         <div class="col-md-6">
           <h1>Présentation de E-Commerce</h1>
           <p class="lead">This example is a quick exercise to illustrate how the top-aligned navbar works. As you scroll, this navbar remains in its original position and moves with the rest of the page.</p>
-          <a class="btn btn-lg btn-primary" href="../components/navbar/" role="button">View navbar docs &raquo;</a><br/><br/>
         </div>
 
         
@@ -218,7 +217,7 @@
           <div class="row">
               
               <div class="col-lg-4 col-md-6 footer-info"> 
-                  <h3 style="animation: flash 1.4s linear infinite;margin-top:2%;letter-spacing:5px;">FASTISOFT</h3>
+                  <h3 style="animation: flash 1.4s linear infinite;margin-top:2%;letter-spacing:5px;">E-commerce</h3>
                  
               </div>
              
