@@ -235,9 +235,9 @@
               <div style= "margin-top:10px" class="col-lg-3 col-md-6 footer-contact"> 
                   <h4> Contactez-nous</h4>
                   <p>
-                      Bambilor   Rue:6 <br/>
-                      Bambilor,  Dakar<br/>
-                      Sénégal<br/>
+                      Nanterre   Rue:6 <br/>
+                      Nanterre,  Paris<br/>
+                      France<br/>
                       <strong>Téléphone:</strong>+221 78 140 12 17<br/> 
                       <strong>Em@il:</strong>BabacarNdong@gmail.com<br/>
                   </p>
